@@ -15,20 +15,18 @@ class Pose_Estimator:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, draw):
+    def __init__(self):
         self.plugin = None
         self.net = None
         self.input_name = None
         self.output_name = None
         self.exec_net = None
         self.request = None
-        self.draw = draw
 
     def load_model(self,  model_path, device='CPU', extensions=None):
         start = time.time()
-        logger = log.getLogger()
         if not os.path.isfile(model_path):
-            logger.error("Wrong model xml path specified"+model_path)
+            log.error("Wrong model xml path specified"+model_path)
             exit(1)
             
         model_xml = model_path
@@ -58,12 +56,12 @@ class Pose_Estimator:
                 unsupported_layers.append(l)
             
         if len(unsupported_layers) != 0:
-            print("Unsupported layers found: {}".format(unsupported_layers))
-            print("Check your extensions")
+            log.error("Unsupported layers found: {}".format(unsupported_layers))
+            log.error("Check your extensions")
             exit(1)
         
         end = time.time()
-        print('Head Pose model load time',start-end)
+#         print('Head Pose model load time',start-end)
         return    
 
     def preprocess(self, frame):
@@ -86,7 +84,7 @@ class Pose_Estimator:
         status = self.request.wait()
         if(status == 0):
             end = time.time()
-            print('Head Pose model inference time',start-end)
+#             print('Head Pose model inference time',start-end)
             angles = self.preprocess_output(image)
        
         return angles
@@ -97,7 +95,6 @@ class Pose_Estimator:
         
     def preprocess_output(self, frame):
         outputs = self.request.outputs
-#         print(outputs)
         
         angles = []      
         angles.append(outputs['angle_y_fc'][0][0])
@@ -111,7 +108,6 @@ class Pose_Estimator:
 #         angles.reshape(1,3)
         return angles
 
-    def draw_points(self,frame, text):
-        if self.draw == 't':
-            cv2.putText(frame, text, (10, 20), cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 2, 0), 1)
+    def draw_points(self,frame, text):   
+        cv2.putText(frame, text, (10, 20), cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 2, 0), 1)
     

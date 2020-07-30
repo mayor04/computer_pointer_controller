@@ -15,20 +15,18 @@ class Facial_Landmarks:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, draw):
+    def __init__(self):
         self.plugin = None
         self.net = None
         self.input_name = None
         self.output_name = None
         self.exec_net = None
         self.request = None
-        self.draw = draw
 
     def load_model(self,  model_path, device='CPU', extensions=None):
         start = time.time()
-        logger = log.getLogger()
         if not os.path.isfile(model_path):
-            logger.error("Wrong model xml path specified"+model_path)
+            log.error("Wrong model xml path specified"+model_path)
             exit(1)
             
         model_xml = model_path
@@ -58,12 +56,12 @@ class Facial_Landmarks:
                 unsupported_layers.append(l)
             
         if len(unsupported_layers) != 0:
-            print("Unsupported layers found: {}".format(unsupported_layers))
-            print("Check your extensions")
+            log.error("Unsupported layers found: {}".format(unsupported_layers))
+            log.error("Check your extensions")
             exit(1)
         
         end = time.time()
-        print('Face landmark model load time',start-end)
+#         print('Face landmark model load time',start-end)
         
         return    
 
@@ -87,7 +85,7 @@ class Facial_Landmarks:
         status = self.request.wait()
         if(status == 0):
             end = time.time()
-            print('Facial landmark model inference time',start-end)
+#             print('Facial landmark model inference time',start-end)
             
             h,w,c = crop_face.shape
             left_eye,right_eye,eye_points = self.preprocess_output(image, points, h, w)
@@ -100,7 +98,6 @@ class Facial_Landmarks:
         
     def preprocess_output(self, frame, points, h, w):
         outputs = self.request.outputs[self.output_name][0]
-        print(outputs)
         
         left_x = (outputs[0][0][0]*w)+points[0]
         lx_min = int(left_x-20)
@@ -124,15 +121,13 @@ class Facial_Landmarks:
         left_eye = cut[ly_min:ly_max,lx_min:lx_max]
         right_eye = cut[ry_min:ry_max,rx_min:rx_max]
         
-        print(lx_min,lx_max,points)
         self.draw_points(frame,(lx_min, ly_min),(lx_max, ly_max),
                         (rx_min, ry_min),(rx_max, ry_max))
 
         return left_eye,right_eye,eye_points
 
     def draw_points(self,frame,leftA,leftB,rightA,rightB):
-        if self.draw == 't':
-            cv2.rectangle(frame, leftA, leftB, (40, 100, 230), 4)
-            cv2.rectangle(frame, rightA, rightB, (40, 100, 230), 4)
+        cv2.rectangle(frame, leftA, leftB, (40, 100, 230), 4)
+        cv2.rectangle(frame, rightA, rightB, (40, 100, 230), 4)
     
     

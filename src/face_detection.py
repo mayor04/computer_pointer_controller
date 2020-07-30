@@ -15,20 +15,18 @@ class Face_Detector:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, draw):
+    def __init__(self):
         self.plugin = None
         self.net = None
         self.input_name = None
         self.output_name = None
         self.exec_net = None
         self.request = None
-        self.draw = draw
 
     def load_model(self,  model_path, device='CPU', extensions=None):
         start = time.time()
-        logger = log.getLogger()
         if not os.path.isfile(model_path):
-            logger.error("Wrong model xml path specified"+model_path)
+            log.error("Wrong model xml path specified"+model_path)
             exit(1)
             
         model_xml = model_path
@@ -57,12 +55,12 @@ class Face_Detector:
                 unsupported_layers.append(l)
             
         if len(unsupported_layers) != 0:
-            print("Unsupported layers found: {}".format(unsupported_layers))
-            print("Check your extensions")
+            log.error("Unsupported layers found: {}".format(unsupported_layers))
+            log.error("Check your extensions")
             exit(1)
         
         end = time.time()
-        print('Face detection model load time',start-end)
+#         print('Face detection model load time',start-end)
         return    
 
     def preprocess(self, frame):
@@ -85,7 +83,7 @@ class Face_Detector:
         status = self.request.wait()
         if(status == 0):
             end = time.time()
-            print('Face detection model inference time',start-end)
+#             print('Face detection model inference time',start-end)
             crop_face,face_count,points = self.preprocess_output(image, thres)
        
         return crop_face,face_count,points
@@ -107,7 +105,7 @@ class Face_Detector:
             if conf >= thres and box[1] == 1:
                 
                 if(faces > 1):
-                    print("found more than one face this"
+                    log.error("found more than one face this"
                           "may affect performance of the model")
                     return crop_face,faces
                 
@@ -127,7 +125,6 @@ class Face_Detector:
         return crop_face,faces,points
 
     def draw_points(self,frame, f, s):
-        if self.draw == 't':
-            cv2.rectangle(frame, f, s, (130, 20, 25), 4)
+        cv2.rectangle(frame, f, s, (130, 20, 25), 4)
     
     

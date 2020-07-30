@@ -12,7 +12,7 @@ from numpy import ndarray
 
 
 class InputFeeder:
-    def __init__(self, input_type, input_file=None, save='t'):
+    def __init__(self, input_type, input_file=None, save=True):
         self.save = save
         
         self.input_type = input_type
@@ -39,8 +39,7 @@ class InputFeeder:
             self.out = cv2.VideoWriter('out.mp4', 0x00000021, 30, (width,height))
 
     def save_file(self,frame): 
-        print('saaaaaaaa')
-        if self.save == 't':
+        if self.save:
             print('saving',self.input_type)
             if self.input_type == 'image':
                 cv2.imwrite('new.jpg',frame)

@@ -16,20 +16,18 @@ class Gaze_Estimator:
     '''
     Class for the Face Detection Model.
     '''
-    def __init__(self, draw):
+    def __init__(self):
         self.plugin = None
         self.net = None
         self.input_name = None
         self.output_name = None
         self.exec_net = None
         self.request = None
-        self.draw = draw
-
+        
     def load_model(self,  model_path, device='CPU', extensions=None):
         start = time.time()
-        logger = log.getLogger()
         if not os.path.isfile(model_path):
-            logger.error("Wrong model xml path specified"+model_path)
+            log.error("Wrong model xml path specified"+model_path)
             exit(1)
             
         model_xml = model_path
@@ -58,12 +56,12 @@ class Gaze_Estimator:
                 unsupported_layers.append(l)
             
         if len(unsupported_layers) != 0:
-            print("Unsupported layers found: {}".format(unsupported_layers))
-            print("Check your extensions")
+            log.error("Unsupported layers found: {}".format(unsupported_layers))
+            log.error("Check your extensions")
             exit(1)
         
         end = time.time()
-        print('Gaze Estimation model load time',start-end)
+#         print('Gaze Estimation model load time',start-end)
         return    
 
     def preprocess(self, frame):
@@ -88,7 +86,7 @@ class Gaze_Estimator:
         status = self.request.wait()
         if(status == 0):
             end = time.time()
-            print('Gaze Estimation model inference time',start-end)
+#             print('Gaze Estimation model inference time',start-end)
             mx,my = self.preprocess_output(image, eye_points, angles[0])
        
         return mx,my
@@ -98,7 +96,6 @@ class Gaze_Estimator:
         
     def preprocess_output(self, frame, eye_points, roll):
         outputs = self.request.outputs[self.output_name][0]
-        print(outputs)
         
         lx = int(eye_points['lx'])
         ly = int(eye_points['ly'])
@@ -117,13 +114,11 @@ class Gaze_Estimator:
         mx = gaze_vector[0] * cosValue * gaze_vector[1] * sinValue
         my = gaze_vector[0] * sinValue * gaze_vector[1] * cosValue
         
-        print(mx,my)
         return mx,my
     
     def draw_points(self,frame,lx,ly,rx,ry,gazeX,gazeY):
-        if self.draw == 't':
-            cv2.arrowedLine(frame,(lx,ly),(lx+gazeX,ly+gazeY), (5, 5, 255), 2)
-            cv2.arrowedLine(frame,(rx,ry),(rx+gazeX,ry+gazeY), (5, 5, 255), 2)
-        
+        cv2.arrowedLine(frame,(lx,ly),(lx+gazeX,ly+gazeY), (5, 5, 255), 2)
+        cv2.arrowedLine(frame,(rx,ry),(rx+gazeX,ry+gazeY), (5, 5, 255), 2)
+
     
     
