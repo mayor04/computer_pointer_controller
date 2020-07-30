@@ -5,7 +5,7 @@
 ## Project Set Up and Installation
 1. Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
 
-2. Clone this repository from this URL: https://github.com/KMKnation/Computer-Pointer-Controller/tree/1.0.0
+2. Clone this repository from this URL: https://github.com/mayor04/computer_pointer_controller.gi
 
 3. Create Virtual Enviorment in working directory.
 
