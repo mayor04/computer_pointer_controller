@@ -1,6 +1,5 @@
 # Computer Pointer Controller
 
-*TODO:* Write a short introduction to your project
 
 ## Project Set Up and Installation
 1. Download [OpenVino ToolKit](https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/choose-download.html) and install it locally.
